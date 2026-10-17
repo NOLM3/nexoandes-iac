@@ -1,0 +1,35 @@
+# Carpeta de trabajo de Terraform (proveedores descargados)
+.terraform/
+
+# State de Terraform
+*.tfstate
+*.tfstate.*
+
+# Planes guardados
+*.tfplan
+tfplan
+plan.out
+
+# Archivos de variables que podrían tener valores sensibles
+*.tfvars
+*.tfvars.json
+
+# Configuración local de Terraform
+.terraformrc
+terraform.rc
+
+# Logs de error de Terraform
+crash.log
+crash.*.log
+
+# Credenciales y claves privadas
+*.pem
+*.key
+credentials
+credentials.*
+.env
+
+# Archivos del sistema
+.DS_Store
+*.swp
+*.tmp
