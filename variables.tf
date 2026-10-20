@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "student_number" {
   description = "Numero de lista del estudiante. Define la subred 172.16.X.0/24 y el tag StudentNumber."
   type        = number
-  default     = 99
+  default     = 6
 }
 
 variable "vpc_cidr" {
