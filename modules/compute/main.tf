@@ -1,4 +1,7 @@
 resource "aws_instance" "portal" {
+  #checkov:skip=CKV_AWS_126:Monitoreo detallado corresponde a monitoreo avanzado, fuera de alcance en Fase 1.
+  #checkov:skip=CKV_AWS_135:El tipo t2.micro no admite EBS optimizado.
+  #checkov:skip=CKV2_AWS_41:El portal no consume APIs de AWS; sin rol IAM se aplica mínimo privilegio.
   ami                    = data.aws_ami.amazon_linux.id
   instance_type          = var.instance_type
   subnet_id              = var.subnet_id
@@ -13,6 +16,10 @@ resource "aws_instance" "portal" {
   metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
+  }
+
+  root_block_device {
+    encrypted = true
   }
 
   tags = {
