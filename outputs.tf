@@ -3,6 +3,11 @@ output "vpc_id" {
   value       = module.network.vpc_id
 }
 
+output "public_subnet_cidr" {
+  description = "Rango de direcciones de la subred publica."
+  value       = module.network.public_subnet_cidr
+}
+
 output "instance_id" {
   description = "ID de la instancia del portal."
   value       = module.compute.instance_id
