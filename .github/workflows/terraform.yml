@@ -1,0 +1,186 @@
+name: Terraform Fase 1
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "Acción a ejecutar"
+        required: true
+        default: plan
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+
+permissions:
+  contents: read
+  actions: read
+
+# Una sola ejecución a la vez sobre el mismo state.
+concurrency:
+  group: terraform-state-fase1
+  cancel-in-progress: false
+
+env:
+  TF_VERSION: "1.16.6"
+  TF_IN_AUTOMATION: "true"
+  AWS_REGION: us-east-1
+
+jobs:
+  controles:
+    name: Controles previos
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: "(a) Formato - terraform fmt"
+        run: terraform fmt -check -recursive
+
+      - name: Inicializar sin backend
+        run: terraform init -backend=false -input=false
+
+      - name: "(b) Validación - terraform validate"
+        run: terraform validate
+
+      - name: "(c) Prueba IaC - terraform test"
+        run: terraform test
+
+      - name: Instalar TFLint
+        run: |
+          curl -sSL -o /tmp/tflint.zip https://github.com/terraform-linters/tflint/releases/download/v0.64.0/tflint_linux_amd64.zip
+          unzip -o /tmp/tflint.zip -d /tmp
+          sudo install /tmp/tflint /usr/local/bin/
+
+      - name: "(d) Lint - TFLint"
+        run: |
+          tflint --init
+          tflint --recursive
+
+      - name: Instalar Checkov
+        run: pipx install checkov==3.3.30
+
+      - name: "(e) Seguridad - Checkov"
+        run: checkov -d . --framework terraform --compact --quiet
+
+  plan:
+    name: Plan
+    needs: controles
+    if: github.event_name != 'workflow_dispatch' || inputs.accion != 'destroy'
+    runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Verificar identidad AWS
+        run: aws sts get-caller-identity --query Arn --output text
+
+      - name: Inicializar con backend S3
+        run: terraform init -input=false
+
+      - name: Generar plan
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Publicar plan en el resumen
+        run: |
+          terraform show -no-color tfplan > plan.txt
+          {
+            echo "## Plan de Terraform"
+            echo '```'
+            cat plan.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Guardar plan como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan
+          path: tfplan
+          retention-days: 1
+
+  apply:
+    name: Apply
+    needs: plan
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.accion == 'apply')
+    runs-on: ubuntu-latest
+    # Gate: el environment exige aprobación manual antes de ejecutar este job.
+    environment: produccion
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Inicializar con backend S3
+        run: terraform init -input=false
+
+      - name: Descargar plan aprobado
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: .
+
+      # Aplica exactamente el plan revisado, no uno recalculado.
+      - name: Aplicar plan
+        run: terraform apply -input=false tfplan
+
+      - name: Mostrar outputs
+        run: terraform output
+
+  destroy:
+    name: Destroy
+    needs: controles
+    if: github.event_name == 'workflow_dispatch' && inputs.accion == 'destroy'
+    runs-on: ubuntu-latest
+    environment: produccion
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Instalar Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+          terraform_wrapper: false
+
+      - name: Inicializar con backend S3
+        run: terraform init -input=false
+
+      - name: Plan de destrucción
+        run: terraform plan -destroy -input=false
+
+      - name: Destruir infraestructura
+        run: terraform destroy -auto-approve -input=false
