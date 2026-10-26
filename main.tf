@@ -16,8 +16,12 @@ module "compute" {
   security_group_id = module.network.web_security_group_id
   instance_type     = var.instance_type
 
-  # Plantilla provisoria hasta integrar user_data_v1.sh.tpl del docente.
-  user_data = templatefile("${path.module}/user_data/portal_test.sh.tpl", {
-    student_number = var.student_number
+  # Artefacto docente integrado sin modificar su lógica; Terraform entrega sus cinco parámetros.
+  user_data = templatefile("${path.module}/templates/user_data_v1.sh.tpl", {
+    student_name   = var.student_name
+    student_number = tostring(var.student_number)
+    environment    = local.environment
+    portal_version = local.portal_version
+    project_name   = local.portal_project_name
   })
 }
