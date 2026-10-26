@@ -4,6 +4,12 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
+variable "student_name" {
+  description = "Nombre del estudiante mostrado en el Portal Operacional."
+  type        = string
+  default     = "Martín López Speer"
+}
+
 variable "student_number" {
   description = "Numero de lista del estudiante. Define la subred 172.16.X.0/24 y el tag StudentNumber."
   type        = number

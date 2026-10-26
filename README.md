@@ -2,7 +2,7 @@
 
 Infraestructura como código del Portal Operacional NexoAndes, desarrollada para la Evaluación Sumativa U1 de IC106TICL — Automatización de Infraestructura con IaC.
 
-- **Autor:** Martín López — N.° de lista 6
+- **Autor:** Martín López Speer — N.° de lista 6
 - **Repositorio:** https://github.com/NOLM3/nexoandes-iac
 
 ## Arquitectura
@@ -16,7 +16,7 @@ Infraestructura como código del Portal Operacional NexoAndes, desarrollada para
 | Security group del portal | Ingreso solo HTTP/80; egreso hacia Internet para el bootstrap; sin SSH |
 | Security group por defecto | Sin reglas (todo el tráfico bloqueado) |
 | EC2 | `t2.micro`, Amazon Linux 2023, IMDSv2 obligatorio, volumen raíz cifrado |
-| User data | Instala Apache y publica el portal con datos obtenidos vía IMDSv2 |
+| User data | Artefacto docente `user_data_v1.sh.tpl`: instala nginx, publica el Portal Operacional V1 con datos obtenidos vía IMDSv2 y expone `/health.txt` |
 | Tags comunes | `StudentNumber = 6`, `Project = NexoAndes`, `Phase = Fase1` |
 
 ## Estructura del repositorio
@@ -27,11 +27,11 @@ Infraestructura como código del Portal Operacional NexoAndes, desarrollada para
 ├── modules/
 │   ├── network/                      # VPC, subred, IGW, rutas y security groups
 │   └── compute/                      # AMI (data source) e instancia EC2
+├── templates/user_data_v1.sh.tpl     # Artefacto docente del Portal Operacional V1
 ├── tests/fase1.tftest.hcl            # Pruebas IaC con aserciones
-├── user_data/portal_test.sh.tpl      # Plantilla de arranque del portal
 ├── backend.tf                        # State remoto en S3
-├── locals.tf                         # Prefijo de nombres, subred calculada y tags
-├── main.tf                           # Root module: composición de módulos
+├── locals.tf                         # Prefijo de nombres, subred, parámetros del portal y tags
+├── main.tf                           # Root module: composición de módulos e integración del user data
 ├── outputs.tf                        # Valores para verificación
 ├── provider.tf                       # Provider AWS con default_tags
 ├── variables.tf                      # Entradas configurables
@@ -43,6 +43,20 @@ Infraestructura como código del Portal Operacional NexoAndes, desarrollada para
 ### Composición de módulos
 
 El root module calcula la subred a partir de `student_number` y la entrega al módulo `network`. El módulo `compute` recibe la subred y el security group desde los outputs de `network`, lo que establece la dependencia: la red se crea antes que la instancia.
+
+### Integración del Portal Operacional V1
+
+El artefacto docente se conserva sin modificar su lógica, HTML ni CSS. El root module lo renderiza con `templatefile()` y entrega el resultado al módulo `compute` como `user_data`:
+
+| Parámetro de la plantilla | Origen en Terraform | Valor |
+|---|---|---|
+| `student_name` | `var.student_name` | `Martín López Speer` |
+| `student_number` | `var.student_number` | `6` |
+| `environment` | `local.environment` | `fase1` |
+| `portal_version` | `local.portal_version` | `v1` |
+| `project_name` | `local.portal_project_name` | `NexoAndes Portal Operacional` |
+
+Las secuencias `$${...}` de la plantilla son intencionales: Terraform las conserva como variables de Bash.
 
 ## Prerrequisitos
 
@@ -58,6 +72,7 @@ El root module calcula la subred a partir de `student_number` y la entrega al m�
 | Variable | Descripción | Valor por defecto |
 |---|---|---|
 | `aws_region` | Región de AWS | `us-east-1` |
+| `student_name` | Nombre mostrado en el portal | `Martín López Speer` |
 | `student_number` | N.° de lista; define la subred `172.16.X.0/24` (rango válido 1–254) | `6` |
 | `vpc_cidr` | Rango de la VPC | `172.16.0.0/16` |
 | `availability_zone` | Zona de la subred pública | `us-east-1a` |
@@ -131,10 +146,11 @@ Las credenciales temporales del Learner Lab se cargan como secrets del repositor
 terraform output
 aws ec2 describe-instances --instance-ids <instance_id> --region us-east-1 \
   --query "Reservations[].Instances[].[InstanceId,State.Name,PrivateIpAddress,PublicIpAddress,Placement.AvailabilityZone]" --output table
-curl -i http://<public_ip>/
+curl -I http://<public_ip>/
+curl http://<public_ip>/health.txt
 ```
 
-Las tres fuentes deben coincidir en el Instance ID: el output identifica, el proveedor confirma el recurso y HTTP confirma el servicio.
+Las tres fuentes deben coincidir en el Instance ID: el output identifica, el proveedor confirma el recurso y HTTP confirma el servicio. `health.txt` debe responder `ok`.
 
 Comprobación posterior al destroy:
 
@@ -190,7 +206,7 @@ Formato `tipo: descripción`, en minúsculas y en presente:
 ## Restricciones del entorno
 
 - Las credenciales del Learner Lab son temporales y se renuevan en cada sesión; los secrets del repositorio deben actualizarse antes de ejecutar el pipeline.
-- El artefacto `user_data_v1.sh.tpl` del docente no estuvo disponible al cierre del desarrollo. Se utiliza la plantilla equivalente `user_data/portal_test.sh.tpl`, que publica los mismos datos de la instancia mediante IMDSv2. Para integrar el artefacto oficial basta con cambiar la ruta en `templatefile` dentro de `main.tf`.
+- El artefacto `user_data_v1.sh.tpl` se publicó después del primer despliegue completo. Mientras no estuvo disponible se utilizó una plantilla equivalente; al recibirlo se integró sin modificaciones y se repitió el despliegue.
 
 ## Referencias
 
