@@ -59,8 +59,9 @@ variable "availability_zones" {
 }
 
 variable "ami_id" {
-  description = "AMI fija de Amazon Linux 2023. Se fija para que una AMI nueva no reemplace instancias sin un cambio en el código."
+  description = "AMI fija de Amazon Linux 2023 (al2023-ami-kernel-6.1-x86_64, us-east-1, consultada el 2026-11-11). Se fija para que una AMI nueva no reemplace instancias sin un cambio en el código."
   type        = string
+  default     = "ami-0b17a6d8467be8c20"
 
   validation {
     condition     = can(regex("^ami-[0-9a-f]{8,17}$", var.ami_id))
