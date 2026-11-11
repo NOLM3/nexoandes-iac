@@ -1,0 +1,18 @@
+Consulta (UTC): 2026-11-11T18:04:02Z
+alb_dns_name = "na-u2-c50-a006-alb-1539241886.us-east-1.elb.amazonaws.com"
+ami_id = "ami-0b17a6d8467be8c20"
+app_version = "v1"
+asg_name = "na-u2-c50-a006-asg"
+bootstrap_bytes = 15570
+build_ref = "0aef2c091431"
+launch_template_id = "lt-079435866a3ee160a"
+launch_template_version = 1
+name_prefix = "na-u2-c50-a006"
+portal_url = "http://na-u2-c50-a006-alb-1539241886.us-east-1.elb.amazonaws.com"
+subnet_cidrs = [
+  "10.6.10.0/24",
+  "10.6.20.0/24",
+]
+target_group_arn = "arn:aws:elasticloadbalancing:us-east-1:943830680153:targetgroup/na-u2-c50-a006-tg/64b837d96ff22414"
+vpc_cidr = "10.6.0.0/16"
+vpc_id = "vpc-0da3ffbaeeba9ae5f"

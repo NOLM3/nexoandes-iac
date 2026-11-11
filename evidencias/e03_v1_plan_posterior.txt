@@ -1,0 +1,4 @@
+Run: 43074766767
+Plan	Calcular build_ref	2026-11-11T18:08:34.0297700Z [36;1mecho "build_ref = $BUILD_REF (último commit que cambió: $ARTEFACTO)"[0m
+Plan	Calcular build_ref	2026-11-11T18:08:34.0466218Z build_ref = 0aef2c091431 (último commit que cambió: templates/user_data_u2.sh.tpl variables.tf)
+Plan	Generar plan	2026-11-11T18:08:49.1796183Z [0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
