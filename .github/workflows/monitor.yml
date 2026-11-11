@@ -1,0 +1,65 @@
+name: Monitor U2
+
+# Se activa al subir una rama monitor/<etiqueta>. Ejecuta los monitores del protocolo U2 desde runners
+# de GitHub, con red estable e independiente de la conexión del alumno, y guarda los registros como artefactos.
+on:
+  push:
+    branches: ["monitor/**"]
+
+permissions:
+  contents: read
+
+env:
+  ENDPOINT: http://na-u2-c50-a006-alb-1539241886.us-east-1.elb.amazonaws.com
+  PREFIJO_ASG: na-u2-c50-a006-asg
+  TARGET_GROUP: na-u2-c50-a006-tg
+  MINUTOS: "20"
+  AWS_REGION: us-east-1
+
+jobs:
+  http:
+    name: Monitor HTTP (cada 2 s)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Monitor HTTP
+        run: |
+          LOG="e06_${GITHUB_REF_NAME#monitor/}_http_github.csv"
+          echo "LOG=$LOG" >> "$GITHUB_ENV"
+          timeout "$(( MINUTOS * 60 ))" bash scripts/monitor_http.sh "$ENDPOINT" "$LOG" || true
+
+      - name: Guardar registro
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LOG }}
+          path: ${{ env.LOG }}
+
+  controlador:
+    name: Monitor del controlador (cada 30 s)
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v4
+
+      - name: Monitor del controlador
+        run: |
+          LOG="e06_${GITHUB_REF_NAME#monitor/}_controlador_github.log"
+          echo "LOG=$LOG" >> "$GITHUB_ENV"
+          TG_ARN=$(aws elbv2 describe-target-groups --names "$TARGET_GROUP" --query 'TargetGroups[0].TargetGroupArn' --output text)
+          timeout "$(( MINUTOS * 60 ))" bash scripts/monitor_asg.sh "$PREFIJO_ASG" "$TG_ARN" "$LOG" || true
+
+      - name: Guardar registro
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LOG }}
+          path: ${{ env.LOG }}
