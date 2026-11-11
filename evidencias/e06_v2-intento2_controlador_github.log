@@ -1,0 +1,291 @@
+=== 2026-11-11T18:39:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:40:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:40:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:41:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:41:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:42:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:42:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:43:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:43:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:44:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:44:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:45:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:45:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:46:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:46:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-0ab3fea6ddaf320b1	initial
+i-05816f5ad721138a2	healthy
+i-01aa22034bd9b15fb	initial
+=== 2026-11-11T18:47:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	Terminating	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	Terminating	Healthy	1
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	draining
+i-0ab3fea6ddaf320b1	healthy
+i-05816f5ad721138a2	draining
+i-01aa22034bd9b15fb	healthy
+=== 2026-11-11T18:47:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-02b1c11dfeb5f79b6	us-east-1b	Terminating	Healthy	1
+None	i-05816f5ad721138a2	us-east-1a	Terminating	Healthy	1
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:48:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-05816f5ad721138a2	us-east-1a	Terminating	Healthy	1
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:48:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:49:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:49:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:50:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:50:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:51:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:51:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:52:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:52:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:53:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:53:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:54:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:54:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:55:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:55:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:56:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:56:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:57:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:57:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:58:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:58:51Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
+=== 2026-11-11T18:59:21Z
+-- Grupos e instancias (asg, id, zona, ciclo de vida, salud, versión LT):
+None	i-01aa22034bd9b15fb	us-east-1b	InService	Healthy	2
+None	i-0ab3fea6ddaf320b1	us-east-1a	InService	Healthy	2
+-- Destinos del ALB (id, estado):
+i-01aa22034bd9b15fb	healthy
+i-0ab3fea6ddaf320b1	healthy
