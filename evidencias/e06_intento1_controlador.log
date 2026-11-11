@@ -1,0 +1,72 @@
+=== 2026-11-11T18:20:16Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:20:46Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:21:16Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:21:46Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:22:16Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:22:46Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:23:16Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
+=== 2026-11-11T18:23:46Z
+-- Instance Refresh (estado, % completado):
+None
+-- Instancias del ASG (id, zona, ciclo de vida, salud, versión LT):
+i-02b1c11dfeb5f79b6	us-east-1b	InService	Healthy	1
+i-05816f5ad721138a2	us-east-1a	InService	Healthy	1
+-- Destinos del ALB (id, estado):
+i-02b1c11dfeb5f79b6	healthy
+i-05816f5ad721138a2	healthy
