@@ -1,19 +1,29 @@
 locals {
-  project = "NexoAndes"
-  phase   = "Fase1"
+  student     = format("a%03d", var.x)
+  name_prefix = "na-u2-${var.course}-${local.student}"
 
-  name_prefix = "nexoandes-fase1-s${var.student_number}"
-
-  public_subnet_cidr = cidrsubnet(var.vpc_cidr, 8, var.student_number)
-
-  # Parámetros fijos del Portal Operacional V1.
-  environment         = "fase1"
-  portal_version      = "v1"
-  portal_project_name = "NexoAndes Portal Operacional"
+  # Convención U2: VPC 10.X.0.0/16, subred A 10.X.10.0/24 y subred B 10.X.20.0/24.
+  vpc_cidr = "10.${var.x}.0.0/16"
+  subnets = {
+    a = { cidr = "10.${var.x}.10.0/24", az = var.availability_zones[0] }
+    b = { cidr = "10.${var.x}.20.0/24", az = var.availability_zones[1] }
+  }
 
   common_tags = {
-    StudentNumber = tostring(var.student_number)
-    Project       = local.project
-    Phase         = local.phase
+    proyecto  = "NexoAndes"
+    fase      = "U2"
+    alumno    = local.student
+    curso     = var.course
+    proveedor = "aws"
   }
+
+  # Artefacto docente integrado sin modificar su lógica; Terraform entrega sus seis parámetros.
+  portal_bootstrap = templatefile("${path.module}/templates/user_data_u2.sh.tpl", {
+    provider       = "aws"
+    x              = var.x
+    student        = local.student
+    course         = var.course
+    build_ref      = var.build_ref
+    portal_version = var.app_version
+  })
 }

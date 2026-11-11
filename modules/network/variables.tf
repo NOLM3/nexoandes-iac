@@ -8,12 +8,10 @@ variable "vpc_cidr" {
   type        = string
 }
 
-variable "public_subnet_cidr" {
-  description = "Rango de direcciones de la subred publica."
-  type        = string
-}
-
-variable "availability_zone" {
-  description = "Zona de disponibilidad de la subred publica."
-  type        = string
+variable "subnets" {
+  description = "Subredes públicas: clave = sufijo, con su rango y su zona."
+  type = map(object({
+    cidr = string
+    az   = string
+  }))
 }
