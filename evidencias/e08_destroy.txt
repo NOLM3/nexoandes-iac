@@ -1,0 +1,4 @@
+Destroy run: 43091583184
+Destroy	Plan de destrucción	2026-11-11T19:57:50.4286650Z [1mPlan:[0m [0m0 to add, 0 to change, 19 to destroy.
+Destroy	Destruir infraestructura	2026-11-11T19:57:59.6368097Z [1mPlan:[0m [0m0 to add, 0 to change, 19 to destroy.
+Destroy	Destruir infraestructura	2026-11-11T20:00:07.5436672Z Destroy complete! Resources: 19 destroyed.[0m

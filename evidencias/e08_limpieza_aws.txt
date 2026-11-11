@@ -1,0 +1,8 @@
+Comprobación de limpieza (UTC): 2026-11-11T20:00:44Z
+-- ASG:
+-- Instancias (no terminadas):
+-- ALB:
+-- Target groups:
+-- Launch Templates:
+-- VPC:
+-- Security groups:
