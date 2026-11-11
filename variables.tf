@@ -33,7 +33,7 @@ variable "build_ref" {
 variable "app_version" {
   description = "Versión del Portal que instala la plantilla. Cambiarla genera una nueva versión del Launch Template y un Instance Refresh."
   type        = string
-  default     = "v2"
+  default     = "v1"
 
   validation {
     condition     = contains(["v1", "v2"], var.app_version)
