@@ -3,17 +3,12 @@ output "vpc_id" {
   value       = aws_vpc.this.id
 }
 
-output "public_subnet_id" {
-  description = "ID de la subred publica."
-  value       = aws_subnet.public.id
+output "subnet_ids" {
+  description = "IDs de las subredes públicas, en orden A, B."
+  value       = [for k in sort(keys(aws_subnet.public)) : aws_subnet.public[k].id]
 }
 
-output "public_subnet_cidr" {
-  description = "Rango de direcciones de la subred publica."
-  value       = aws_subnet.public.cidr_block
-}
-
-output "web_security_group_id" {
-  description = "ID del grupo de seguridad del portal."
-  value       = aws_security_group.web.id
+output "subnet_cidrs" {
+  description = "Rangos de las subredes públicas, en orden A, B."
+  value       = [for k in sort(keys(aws_subnet.public)) : aws_subnet.public[k].cidr_block]
 }

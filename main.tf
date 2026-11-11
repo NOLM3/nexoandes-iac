@@ -1,27 +1,23 @@
 module "network" {
   source = "./modules/network"
 
-  name_prefix        = local.name_prefix
-  vpc_cidr           = var.vpc_cidr
-  public_subnet_cidr = local.public_subnet_cidr
-  availability_zone  = var.availability_zone
+  name_prefix = local.name_prefix
+  vpc_cidr    = local.vpc_cidr
+  subnets     = local.subnets
 }
 
-# Composición: la subred y el security group salen del módulo de red.
-module "compute" {
-  source = "./modules/compute"
+# Composición: las subredes y la VPC salen del módulo de red.
+module "portal" {
+  source = "./modules/portal_aws"
 
-  name_prefix       = local.name_prefix
-  subnet_id         = module.network.public_subnet_id
-  security_group_id = module.network.web_security_group_id
-  instance_type     = var.instance_type
-
-  # Artefacto docente integrado sin modificar su lógica; Terraform entrega sus cinco parámetros.
-  user_data = templatefile("${path.module}/templates/user_data_v1.sh.tpl", {
-    student_name   = var.student_name
-    student_number = tostring(var.student_number)
-    environment    = local.environment
-    portal_version = local.portal_version
-    project_name   = local.portal_project_name
-  })
+  name_prefix   = local.name_prefix
+  vpc_id        = module.network.vpc_id
+  subnet_ids    = module.network.subnet_ids
+  ami_id        = var.ami_id
+  instance_type = var.instance_type
+  base_capacity = var.base_capacity
+  user_data     = local.portal_bootstrap
+  app_version   = var.app_version
+  build_ref     = var.build_ref
+  tags          = local.common_tags
 }

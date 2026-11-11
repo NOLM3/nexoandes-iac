@@ -1,4 +1,4 @@
-name: Terraform Fase 1
+name: Terraform U2
 
 on:
   pull_request:
@@ -23,13 +23,16 @@ permissions:
 
 # Una sola ejecución a la vez sobre el mismo state.
 concurrency:
-  group: terraform-state-fase1
+  group: terraform-state-u2
   cancel-in-progress: false
 
 env:
   TF_VERSION: "1.16.6"
   TF_IN_AUTOMATION: "true"
   AWS_REGION: us-east-1
+  # Archivos que definen el artefacto del Portal: si no cambian, build_ref no cambia
+  # y un commit de documentación no reemplaza instancias.
+  ARTEFACTO: "templates/user_data_u2.sh.tpl variables.tf"
 
 jobs:
   controles:
@@ -84,14 +87,22 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
     steps:
-      - name: Obtener código
+      - name: Obtener código con historial
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
+
+      - name: Calcular build_ref
+        run: |
+          BUILD_REF=$(git log -1 --format=%H -- $ARTEFACTO | cut -c1-12)
+          echo "TF_VAR_build_ref=$BUILD_REF" >> "$GITHUB_ENV"
+          echo "build_ref = $BUILD_REF (último commit que cambió: $ARTEFACTO)"
 
       - name: Verificar identidad AWS
         run: aws sts get-caller-identity --query Arn --output text
@@ -107,6 +118,7 @@ jobs:
           terraform show -no-color tfplan > plan.txt
           {
             echo "## Plan de Terraform"
+            echo "build_ref: \`$TF_VAR_build_ref\`"
             echo '```'
             cat plan.txt
             echo '```'
@@ -151,10 +163,42 @@ jobs:
 
       # Aplica exactamente el plan revisado, no uno recalculado.
       - name: Aplicar plan
-        run: terraform apply -input=false tfplan
+        run: |
+          date -u +"Inicio del apply (UTC): %Y-%m-%dT%H:%M:%SZ"
+          terraform apply -input=false tfplan
+          date -u +"Fin del apply (UTC): %Y-%m-%dT%H:%M:%SZ"
 
       - name: Mostrar outputs
         run: terraform output
+
+      # El apply solo inicia el Instance Refresh: aquí se espera el resultado real del controlador.
+      - name: Esperar resultado del Instance Refresh
+        run: |
+          ASG=$(terraform output -raw asg_name)
+          for i in $(seq 1 80); do
+            ESTADO=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name "$ASG" \
+              --max-records 1 --query 'InstanceRefreshes[0].Status' --output text)
+            echo "$(date -u +%H:%M:%SZ) Instance Refresh: $ESTADO"
+            case "$ESTADO" in
+              None) echo "Sin Instance Refresh: despliegue inicial o sin cambio de Launch Template."; break ;;
+              Successful) break ;;
+              Failed|Cancelled|RollbackSuccessful|RollbackFailed) exit 1 ;;
+            esac
+            sleep 15
+          done
+          aws autoscaling describe-instance-refreshes --auto-scaling-group-name "$ASG" --max-records 1 \
+            --query 'InstanceRefreshes[0].{Id:InstanceRefreshId,Estado:Status,Inicio:StartTime,Fin:EndTime,Porcentaje:PercentageComplete}' \
+            --output table
+
+      - name: Comprobar capacidad y destinos
+        run: |
+          ASG=$(terraform output -raw asg_name)
+          TG=$(terraform output -raw target_group_arn)
+          aws autoscaling describe-auto-scaling-groups --auto-scaling-group-names "$ASG" \
+            --query 'AutoScalingGroups[0].Instances[].{Id:InstanceId,Zona:AvailabilityZone,Estado:LifecycleState,Salud:HealthStatus,LT:LaunchTemplate.Version}' \
+            --output table
+          aws elbv2 describe-target-health --target-group-arn "$TG" \
+            --query 'TargetHealthDescriptions[].{Id:Target.Id,Estado:TargetHealth.State}' --output table
 
   destroy:
     name: Destroy
@@ -167,14 +211,21 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
     steps:
-      - name: Obtener código
+      - name: Obtener código con historial
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Instalar Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
+
+      - name: Calcular build_ref
+        run: |
+          BUILD_REF=$(git log -1 --format=%H -- $ARTEFACTO | cut -c1-12)
+          echo "TF_VAR_build_ref=$BUILD_REF" >> "$GITHUB_ENV"
 
       - name: Inicializar con backend S3
         run: terraform init -input=false
