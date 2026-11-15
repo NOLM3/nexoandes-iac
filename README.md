@@ -1,217 +1,110 @@
-# NexoAndes — Portal Operacional V1 (Fase 1)
+# NexoAndes — Portal Operacional (Fase 2: multi-cloud y actualización inmutable)
 
-Infraestructura como código del Portal Operacional NexoAndes, desarrollada para la Evaluación Sumativa U1 de IC106TICL — Automatización de Infraestructura con IaC.
+Infraestructura como código del Portal Operacional NexoAndes para la Evaluación Sumativa U2 de IC106TICL — Automatización de Infraestructura con IaC. Continúa el repositorio y el pipeline de la Fase 1 (U1).
 
-- **Autor:** Martín López Speer — N.° de lista 6
+- **Autor:** Martín López Speer
+- **Identidad de laboratorio:** X = 6, alumno `a006`, curso `c50`, prefijo `na-u2-c50-a006`
 - **Repositorio:** https://github.com/NOLM3/nexoandes-iac
 
 ## Arquitectura
 
-| Componente | Configuración |
-|---|---|
-| VPC | `172.16.0.0/16`, DNS habilitado |
-| Subred pública | `172.16.6.0/24` en `us-east-1a`, IPv4 pública automática |
-| Internet Gateway | Asociado a la VPC |
-| Tabla de rutas | `0.0.0.0/0 → Internet Gateway`, asociada a la subred pública |
-| Security group del portal | Ingreso solo HTTP/80; egreso hacia Internet para el bootstrap; sin SSH |
-| Security group por defecto | Sin reglas (todo el tráfico bloqueado) |
-| EC2 | `t2.micro`, Amazon Linux 2023, IMDSv2 obligatorio, volumen raíz cifrado |
-| User data | Artefacto docente `user_data_v1.sh.tpl`: instala nginx, publica el Portal Operacional V1 con datos obtenidos vía IMDSv2 y expone `/health.txt` |
-| Tags comunes | `StudentNumber = 6`, `Project = NexoAndes`, `Phase = Fase1` |
+![Arquitectura implementada](docs/diagrama_u2.png)
+
+**AWS (implementado, `us-east-1`):** VPC `10.6.0.0/16` con la subred A `10.6.10.0/24` (us-east-1a) y la subred B `10.6.20.0/24` (us-east-1b), Internet Gateway y ruta `0.0.0.0/0`. El tráfico entra por un Application Load Balancer (`na-u2-c50-a006-alb`, HTTP 80) que comprueba la salud de cada instancia en `/api/check`. Las instancias EC2 `t3.micro` las crea un Auto Scaling Group desde el Launch Template `na-u2-c50-a006-lt`: AMI fija de Amazon Linux 2023, IMDSv2 obligatorio, disco cifrado y la plantilla del docente como user data. Las instancias solo aceptan HTTP desde el security group del ALB y no tienen SSH.
+
+**Azure (diseño conceptual, no desplegado):** VNet `172.20.6.0/24`, subred `172.20.6.0/26`, NSG con HTTP 80, IP pública, interfaz de red y VM Linux con el Portal v1. No se desplegó porque el directorio IPSS no permite crear el service principal que necesita el pipeline para autenticarse en Azure (ver Restricciones).
 
 ## Estructura del repositorio
 
 ```
 .
-├── .github/workflows/terraform.yml   # Pipeline CI/CD
+├── .github/workflows/
+│   ├── terraform.yml        # Pipeline: controles, plan, gate, apply y destroy
+│   └── monitor.yml          # Monitores de la ventana de observación (ramas monitor/*)
 ├── modules/
-│   ├── network/                      # VPC, subred, IGW, rutas y security groups
-│   └── compute/                      # AMI (data source) e instancia EC2
-├── templates/user_data_v1.sh.tpl     # Artefacto docente del Portal Operacional V1
-├── tests/fase1.tftest.hcl            # Pruebas IaC con aserciones
-├── backend.tf                        # State remoto en S3
-├── locals.tf                         # Prefijo de nombres, subred, parámetros del portal y tags
-├── main.tf                           # Root module: composición de módulos e integración del user data
-├── outputs.tf                        # Valores para verificación
-├── provider.tf                       # Provider AWS con default_tags
-├── variables.tf                      # Entradas configurables
-├── versions.tf                       # Restricciones de versión
-├── .tflint.hcl                       # Configuración del linter
-└── .terraform.lock.hcl               # Versiones exactas de providers
+│   ├── network/             # VPC, subredes, IGW, rutas y SG por defecto sin reglas
+│   └── portal_aws/          # ALB, target group, security groups, Launch Template y ASG
+├── templates/user_data_u2.sh.tpl   # Artefacto docente del Portal (v1/v2), sin modificar
+├── tests/u2.tftest.hcl      # Pruebas con proveedor simulado
+├── scripts/
+│   ├── monitor_http.sh      # GET /api/check cada 2 s, timeout 5 s, sin reintentos
+│   ├── monitor_asg.sh       # Instancias de los ASG y salud de destinos cada 30 s
+│   └── analizar_http.py     # Resumen de un registro HTTP
+├── docs/
+│   ├── plan_cambio_v2.md    # Plan del cambio y de la recuperación, con la adaptación
+│   ├── diagrama_u2.png      # Diagrama de la arquitectura implementada
+│   └── README_ESTUDIANTE_U2.md   # Guía del docente para la plantilla
+├── evidencias/              # Registros de verificación, observación y limpieza
+├── backend.tf  locals.tf  main.tf  outputs.tf  provider.tf  variables.tf  versions.tf
+├── .tflint.hcl
+└── .terraform.lock.hcl
 ```
 
-### Composición de módulos
+## Configuración
 
-El root module calcula la subred a partir de `student_number` y la entrega al módulo `network`. El módulo `compute` recibe la subred y el security group desde los outputs de `network`, lo que establece la dependencia: la red se crea antes que la instancia.
+Los valores de la convención se calculan en `locals.tf` a partir de `x = 6` y `course = "c50"`: alumno, prefijo de nombres, redes y etiquetas (`proyecto`, `fase`, `alumno`, `curso`, `proveedor`). La plantilla del docente se renderiza con `templatefile()` y sus seis parámetros.
 
-### Integración del Portal Operacional V1
+Variables principales en `variables.tf`:
 
-El artefacto docente se conserva sin modificar su lógica, HTML ni CSS. El root module lo renderiza con `templatefile()` y entrega el resultado al módulo `compute` como `user_data`:
+- `app_version`: versión del Portal (`v1` o `v2`). Es el único valor que se cambia para actualizar o recuperar.
+- `build_ref`: SHA del último commit que modificó el artefacto. Lo calcula el pipeline; no tiene valor por defecto.
+- `ami_id`: AMI fija (`ami-0b17a6d8467be8c20`), para que una AMI nueva no reemplace instancias sin un cambio en el código.
+- `base_capacity`: capacidad base del ASG (2).
 
-| Parámetro de la plantilla | Origen en Terraform | Valor |
-|---|---|---|
-| `student_name` | `var.student_name` | `Martín López Speer` |
-| `student_number` | `var.student_number` | `6` |
-| `environment` | `local.environment` | `fase1` |
-| `portal_version` | `local.portal_version` | `v1` |
-| `project_name` | `local.portal_project_name` | `NexoAndes Portal Operacional` |
+Versiones: Terraform `>= 1.10.0` (pipeline con 1.16.6) y provider `hashicorp/aws` `>= 5.0, < 7.0` (6.69.1 en el lock file).
 
-Las secuencias `$${...}` de la plantilla son intencionales: Terraform las conserva como variables de Bash.
+## Estrategia de actualización
 
-## Prerrequisitos
+Cada cambio de `app_version` crea una versión nueva del Launch Template. El nombre del ASG incluye esa versión, así que Terraform reemplaza el grupo completo con `create_before_destroy` (blue-green sobre el mismo ALB):
 
-- Terraform >= 1.10
-- AWS CLI v2
-- Git
-- TFLint y Checkov (solo para ejecutar los controles localmente)
-- Sesión activa de AWS Academy Learner Lab
-- Bucket S3 para el state (ver sección siguiente)
+1. Crea el ASG nuevo con 2 instancias de la versión nueva, registradas en el mismo target group.
+2. Espera a que las 2 estén sanas en el ALB (`min_elb_capacity = 2`).
+3. Destruye el ASG anterior; el ALB drena sus instancias durante 30 s.
 
-## Variables
+Las instancias nunca se modifican: siempre se reemplazan. La estrategia inicial era rolling con Instance Refresh, pero AWS Academy la bloquea con una service control policy. El detalle está en `docs/plan_cambio_v2.md`.
 
-| Variable | Descripción | Valor por defecto |
-|---|---|---|
-| `aws_region` | Región de AWS | `us-east-1` |
-| `student_name` | Nombre mostrado en el portal | `Martín López Speer` |
-| `student_number` | N.° de lista; define la subred `172.16.X.0/24` (rango válido 1–254) | `6` |
-| `vpc_cidr` | Rango de la VPC | `172.16.0.0/16` |
-| `availability_zone` | Zona de la subred pública | `us-east-1a` |
-| `instance_type` | Tipo de instancia EC2 | `t2.micro` |
+## Pipeline
 
-## State
+`terraform.yml` se ejecuta en pull requests hacia `main`, en push a `main` y manualmente (`plan`, `apply` o `destroy`):
 
-El state se almacena en S3, fuera de Git:
+1. **Controles previos:** `terraform fmt -check`, `terraform validate`, `terraform test`, TFLint y Checkov. Sin credenciales.
+2. **Plan:** calcula `build_ref`, genera el plan con el backend S3 y lo guarda como artefacto.
+3. **Gate:** el environment `produccion` exige aprobación manual.
+4. **Apply:** aplica exactamente el plan aprobado, muestra los outputs y registra las instancias y la salud de los destinos.
+5. **Destroy:** manual, con plan de destrucción y la misma aprobación.
 
-- **Bucket:** `nexoandes-tfstate-s6-943830680153`
-- **Key:** `fase1/terraform.tfstate`
-- **Protecciones:** cifrado, versionado, bloqueo de acceso público y bloqueo de escritura concurrente (`use_lockfile`)
-
-El bucket se crea una sola vez, antes del primer `terraform init`:
+`monitor.yml` corre los monitores durante 20 minutos al subir una rama `monitor/<etiqueta>` y guarda los registros como artefactos:
 
 ```bash
-BUCKET="nexoandes-tfstate-s6-$(aws sts get-caller-identity --query Account --output text)"
-aws s3api create-bucket --bucket "$BUCKET" --region us-east-1
-aws s3api put-bucket-versioning --bucket "$BUCKET" --versioning-configuration Status=Enabled
-aws s3api put-public-access-block --bucket "$BUCKET" --public-access-block-configuration BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true
+git push origin <rama>:refs/heads/monitor/<etiqueta>
 ```
 
-## Pipeline CI/CD
+## Operación
 
-Definido en `.github/workflows/terraform.yml` (GitHub Actions).
+- **Desplegar v1:** merge del PR con `app_version = "v1"` y aprobación del gate.
+- **Actualizar a v2:** lanzar los monitores, esperar 2 minutos, merge del PR que cambia `app_version` a `"v2"` y aprobación del gate.
+- **Recuperar v1:** el mismo procedimiento con `app_version = "v1"`. Crea instancias nuevas desde otra versión del Launch Template.
+- **Verificar:** `terraform output`, AWS CLI y `curl http://<dns-del-alb>/api/check`.
+- **Limpiar:** ejecución manual del pipeline con `destroy` y comprobación con AWS CLI.
 
-| Evento | Jobs que se ejecutan |
-|---|---|
-| Pull request hacia `main` | Controles previos → Plan |
-| Push a `main` (merge) | Controles previos → Plan → **Gate** → Apply |
-| Manual: `plan` | Controles previos → Plan |
-| Manual: `apply` | Controles previos → Plan → **Gate** → Apply |
-| Manual: `destroy` | Controles previos → **Gate** → Destroy |
+## State y seguridad
 
-### Controles previos
+- State en S3 (`nexoandes-tfstate-s6-943830680153`, clave `u2/terraform.tfstate`), cifrado y con bloqueo (`use_lockfile = true`).
+- `.gitignore` excluye el state, los planes, `.terraform/`, los archivos de variables y las credenciales.
+- El pipeline usa las credenciales temporales del Learner Lab como secrets del repositorio; el job de controles no las recibe.
+- Sin SSH ni claves en el repositorio. Las omisiones de Checkov están justificadas en el código con `#checkov:skip`.
 
-| Control | Herramienta | Propósito |
-|---|---|---|
-| (a) Formato | `terraform fmt -check` | Estilo uniforme del código |
-| (b) Validación | `terraform validate` | Sintaxis y coherencia de la configuración |
-| (c) Prueba IaC | `terraform test` | Aserciones sobre el cálculo de la subred, reutilización del módulo y validación de entradas |
-| (d) Lint | TFLint | Buenas prácticas: declaraciones sin uso, versiones y tipos |
-| (e) Seguridad | Checkov | Configuraciones riesgosas en los recursos |
+## Resultados (11-11-2026)
 
-### Criterio de despliegue
+- **v1:** desplegado y verificado con outputs, AWS CLI y HTTP; plan posterior sin cambios.
+- **v1 → v2:** el intento 1 fue rechazado por la SCP de AWS Academy y se conserva. En el intento 2 (blue-green) hubo 595 muestras HTTP, 0 fallos y al menos 2 destinos sanos en cada consulta.
+- **Recuperación a v1:** 595 muestras, 0 fallos e instancias nuevas; plan posterior sin cambios.
+- **Limpieza:** destroy de 19 recursos por pipeline y comprobación independiente sin recursos restantes.
 
-- Si cualquier control falla, el plan no se ejecuta.
-- Si el plan falla, el apply no se ejecuta.
-- El apply y el destroy usan el environment `produccion`, que exige aprobación manual (gate).
-- El apply aplica el plan guardado como artefacto, es decir, exactamente el plan revisado.
-- `concurrency` impide ejecuciones simultáneas sobre el mismo state.
+Los registros están en `evidencias/` y el análisis completo en la ficha de evidencias U2.
 
-### Autenticación
+## Restricciones
 
-Las credenciales temporales del Learner Lab se cargan como secrets del repositorio (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`). No se escriben en el código y aparecen enmascaradas en los logs. El job de controles no recibe credenciales.
-
-## Flujo de despliegue y limpieza
-
-1. Desarrollar los cambios en una rama de trabajo.
-2. Abrir un pull request hacia `main`: el pipeline ejecuta los controles y el plan.
-3. Revisar el plan y hacer el merge.
-4. El pipeline se detiene en el gate; revisar el plan y aprobar el despliegue.
-5. Verificar el resultado (sección siguiente).
-6. Ejecutar manualmente el workflow con `plan`: debe indicar `No changes`.
-7. Ejecutar manualmente el workflow con `destroy` y aprobar el gate.
-8. Comprobar que no quedan recursos.
-
-## Verificación
-
-```bash
-terraform output
-aws ec2 describe-instances --instance-ids <instance_id> --region us-east-1 \
-  --query "Reservations[].Instances[].[InstanceId,State.Name,PrivateIpAddress,PublicIpAddress,Placement.AvailabilityZone]" --output table
-curl -I http://<public_ip>/
-curl http://<public_ip>/health.txt
-```
-
-Las tres fuentes deben coincidir en el Instance ID: el output identifica, el proveedor confirma el recurso y HTTP confirma el servicio. `health.txt` debe responder `ok`.
-
-Comprobación posterior al destroy:
-
-```bash
-aws ec2 describe-instances --region us-east-1 --filters "Name=tag:Project,Values=NexoAndes" \
-  --query "Reservations[].Instances[].[InstanceId,State.Name]" --output table
-aws ec2 describe-vpcs --region us-east-1 --filters "Name=tag:Project,Values=NexoAndes" --query "Vpcs[].VpcId" --output text
-```
-
-## Ejecución local (diagnóstico)
-
-Los controles pueden ejecutarse localmente antes de abrir un pull request. El despliegue evaluado se realiza solo desde el pipeline.
-
-```bash
-terraform init
-terraform fmt -check -recursive
-terraform validate
-terraform test
-tflint --init && tflint --recursive
-checkov -d . --framework terraform --compact --quiet
-terraform plan
-```
-
-## Convención de commits
-
-Formato `tipo: descripción`, en minúsculas y en presente:
-
-| Tipo | Uso |
-|---|---|
-| `feat` | Nueva funcionalidad o recurso |
-| `fix` | Corrección de un error |
-| `docs` | Documentación |
-| `test` | Pruebas |
-| `ci` | Pipeline |
-| `chore` | Configuración y tareas de mantenimiento |
-
-## Seguridad
-
-- `.gitignore` excluye `.terraform/`, archivos de state, planes, `*.tfvars`, claves y credenciales.
-- `.terraform.lock.hcl` sí se versiona.
-- Excepciones de Checkov documentadas en el código con su justificación:
-
-| Regla | Justificación |
-|---|---|
-| CKV_AWS_130 | El diagrama exige IPv4 pública automática en la subred |
-| CKV_AWS_260 | El portal debe responder HTTP público en el puerto 80 |
-| CKV2_AWS_5 | Falso positivo: el SG se asocia en el módulo `compute` |
-| CKV2_AWS_11 | Flow logs corresponden a monitoreo avanzado, fuera de alcance |
-| CKV_AWS_126 | Monitoreo detallado fuera de alcance |
-| CKV_AWS_135 | `t2.micro` no admite EBS optimizado |
-| CKV2_AWS_41 | El portal no consume APIs de AWS; sin rol IAM se aplica mínimo privilegio |
-
-## Restricciones del entorno
-
-- Las credenciales del Learner Lab son temporales y se renuevan en cada sesión; los secrets del repositorio deben actualizarse antes de ejecutar el pipeline.
-- El artefacto `user_data_v1.sh.tpl` se publicó después del primer despliegue completo. Mientras no estuvo disponible se utilizó una plantilla equivalente; al recibirlo se integró sin modificaciones y se repitió el despliegue.
-
-## Referencias
-
-- Amazon Web Services. (2026). *Use the Instance Metadata Service to access instance metadata*. https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html
-- Bridgecrew. (2026). *Checkov documentation*. https://www.checkov.io/
-- GitHub. (2026). *GitHub Actions documentation*. https://docs.github.com/actions
-- HashiCorp. (2026). *Terraform documentation*. https://developer.hashicorp.com/terraform/docs
-- TFLint. (2026). *TFLint* [Software]. https://github.com/terraform-linters/tflint
+- **Azure:** `az ad sp create-for-rbac` responde «privilegios insuficientes» porque el directorio IPSS no permite crear service principals. Sin esa identidad, el pipeline no puede desplegar en Azure, que queda como diseño conceptual.
+- **Instance Refresh:** AWS Academy deniega `autoscaling:StartInstanceRefresh` mediante una service control policy. Se reemplazó por blue-green con reemplazo del ASG.
+- **Red del estudiante:** los timeouts del monitor local correspondían a la conexión móvil del cliente, por lo que el monitor principal corre en GitHub Actions.
